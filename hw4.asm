@@ -78,8 +78,8 @@ print_tree_end:
 search_node:
     # Function prologue
     move $t0, $a0
-search_loop:
-    beqz $t0, search_not_found
+search_loop: 
+    beqz $t0, not_found_msg
     lw $t1, 0($t0)
     beq $t1, $a1, search_found
 	blt $a1, $t1, search_left
