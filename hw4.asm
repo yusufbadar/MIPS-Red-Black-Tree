@@ -79,7 +79,7 @@ search_node:
     # Function prologue
     move $t0, $a0
 search_loop: 
-    beqz $t0, not_found_msg
+    beqz $t0, not_found
     lw $t1, 0($t0)
     beq $t1, $a1, search_found
 	blt $a1, $t1, search_left
@@ -91,6 +91,9 @@ search_left:
 search_found:
     move $v0, $t0
     j search_node_end
+not_found:
+    li $v0, -1
+    jr $ra
 search_node_end:	
 	#Function Epilogue
 	jr $ra
