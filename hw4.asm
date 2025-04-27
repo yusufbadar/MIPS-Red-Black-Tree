@@ -105,58 +105,6 @@ search_node_end:
 # Returns:
 #	$v0 - pointer to root
 
-insert_node:
-	addi $sp,$sp,-8
-	sw $ra,4($sp)
-	sw $s1,0($sp)
-	move $s1,$a0
-	li $v0,9
-	li $a0,20
-	syscall
-	move $t0,$v0
-	sw $a1,0($t0)
-	sw $zero,4($t0)
-	sw $zero,8($t0)
-	li $t1,1
-	sw $t1,12($t0)
-	sw $zero,16($t0)
-	move $t2,$s1
-	move $t3,$zero
-bst_walk:
-	beqz $t2,bst_done
-	move $t3,$t2
-	lw $t4,0($t2)
-	blt $a1,$t4,bst_left
-	lw $t2,8($t2)
-	j bst_walk
-bst_left:
-	lw $t2,4($t2)
-	j bst_walk
-bst_done:
-	sw $t3,16($t0)
-	beqz $t3,new_root
-	lw $t4,0($t3)
-	blt $a1,$t4,link_left
-	sw $t0,8($t3)
-	j after_link
-link_left:
-	sw $t0,4($t3)
-	j after_link
-new_root:
-	move $s1,$t0
-after_link:
-	move $a0,$t0
-	jal insert_fixup
-	move $v0,$v0
-	lw $s1,0($sp)
-	lw $ra,4($sp)
-	addi $sp,$sp,8
-	jr $ra
-# Function: insert_fixup
-# Arguments:
-#    $a0 - pointer to the newly inserted node
-# Returns:
-#	$v0 - pointer to the root of the tree
 insert_fixup:
 	addi $sp,$sp,-4
 	sw $ra,0($sp)
@@ -169,14 +117,17 @@ fix_loop:
 	beqz $t2,end_fix
 	lw $t3,16($t1)
 	beqz $t3,end_fix
+
 	lw $t4,4($t3)
 	beqz $t4,end_fix
+
 	beq $t4,$t1,case_left
 case_right:
 	lw $t5,4($t3)
 	beqz $t5,uncbnR
 	lw $t6,12($t5)
 	beqz $t6,uncbnR
+
 	sw $zero,12($t1)
 	sw $zero,12($t5)
 	li $t7,1
@@ -202,6 +153,7 @@ case_left:
 	beqz $t5,uncbnL
 	lw $t6,12($t5)
 	beqz $t6,uncbnL
+
 	sw $zero,12($t1)
 	sw $zero,12($t5)
 	li $t7,1
@@ -251,10 +203,10 @@ rl_skip1:
 	sw $t3,16($t1)
 	beqz $t3,rl_skip2
 	lw $t4,4($t3)
-	beq $t4,$a0,rl_left_child
+	beq $t4,$a0,rl_parent_left
 	sw $t1,8($t3)
 	j rl_skip2
-rl_left_child:
+rl_parent_left:
 	sw $t1,4($t3)
 rl_skip2:
 	sw $a0,4($t1)
@@ -279,10 +231,10 @@ rr_skip1:
 	sw $t3,16($t1)
 	beqz $t3,rr_skip2
 	lw $t4,4($t3)
-	beq $t4,$a0,rr_left_child
+	beq $t4,$a0,rr_parent_left
 	sw $t1,8($t3)
 	j rr_skip2
-rr_left_child:
+rr_parent_left:
 	sw $t1,4($t3)
 rr_skip2:
 	sw $a0,8($t1)
