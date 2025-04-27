@@ -144,12 +144,10 @@ link_L:
     sw $t0,4($t1)
 new_root:
     move $a0,$t0
-    j after_ins
 after_ins:
     move $a0,$t0
     jal insert_fixup
     move $v0,$a0
-    j insert_node_done
 
 insert_node_done:
 	#Function Epilogue
