@@ -107,6 +107,9 @@ search_node_end:
 
 insert_node:
 	# Function prologue
+    addi $sp, $sp, -8
+    sw $ra, 4($sp)
+    sw $s1, 0($sp)
     move $s1, $a0
     li $v0,9
     li $a0,20
@@ -120,7 +123,6 @@ insert_node:
     sw $zero,16($t0)
     move $t1,$zero
     move $t2,$s1
-
 bst_loop:
     beqz $t2,bst_done
     move $t1,$t2
@@ -128,11 +130,9 @@ bst_loop:
     blt $a1,$t3,bst_left
     lw $t2,8($t2)
     j bst_loop
-
 bst_left:
     lw $t2,4($t2)
     j bst_loop
-
 bst_done:
     sw $t1,16($t0)
     beqz $t1,new_root
@@ -153,6 +153,9 @@ after_ins:
 
 insert_node_done:
 	#Function Epilogue
+    lw $s1, 0($sp)
+    lw $ra, 4($sp)
+    addi $sp, $sp, 8
     jr $ra
 
 insert_fixup:
