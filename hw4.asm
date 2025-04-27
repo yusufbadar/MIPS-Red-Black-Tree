@@ -210,6 +210,7 @@ find_rt:
 
 rotate_left:
     lw $t1,8($a0)
+    beqz $t1, rootL
     lw $t2,4($t1)
     sw $t2,8($a0)
     beqz $t2,skip1
