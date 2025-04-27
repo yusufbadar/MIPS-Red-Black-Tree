@@ -106,62 +106,61 @@ search_node_end:
 #	$v0 - pointer to root
 
 insert_node:
-    addi $sp, $sp, -8
-    sw $ra, 4($sp)
-    sw $s1, 0($sp)
-    move $s1, $a0
-    li $v0,9
-    li $a0,20
-    syscall
-    move $a0, $s1
-    move $t0,$v0
-    sw $a1,0($t0)
-    li $t1,1
-    sw $t1,12($t0)
-    sw $zero,4($t0)
-    sw $zero,8($t0)
-    sw $zero,16($t0)
-
-    move $t1,$zero
-    move $t2,$s1
+    addi $sp, $sp, -8
+    sw $ra, 4($sp)
+    sw $s1, 0($sp)
+    move $s1, $a0
+    li $v0,9
+    li $a0,20
+    syscall
+    move $a0, $s1
+    move $t0,$v0
+    sw $a1,0($t0)
+    li $t1,1
+    sw $t1,12($t0)
+    sw $zero,4($t0)
+    sw $zero,8($t0)
+    sw $zero,16($t0
+    move $t1,$zero
+    move $t2,$s1
 
 bst_loop:
-    beqz $t2,bst_done
-    move $t1,$t2
-    lw $t3,0($t2)
-    blt $a1,$t3,bst_left
-    lw $t2,8($t2)
-    j bst_loop
+    beqz $t2,bst_done
+    move $t1,$t2
+    lw $t3,0($t2)
+    blt $a1,$t3,bst_left
+    lw $t2,8($t2)
+    j bst_loop
 
 bst_left:
-    lw $t2,4($t2)
-    j bst_loop
+    lw $t2,4($t2)
+    j bst_loop
 
 bst_done:
-    sw $t1,16($t0)
-    beqz $t1,new_root
-    lw $t3,0($t1)
-    blt $a1,$t3,link_L
-    sw $t0,8($t1)
-    j after_ins
+    sw $t1,16($t0)
+    beqz $t1,new_root
+    lw $t3,0($t1)
+    blt $a1,$t3,link_L
+    sw $t0,8($t1)
+    j after_ins
 
 link_L:
-    sw $t0,4($t1)
+    sw $t0,4($t1)
 
 new_root:
-    move $a0,$t0
+    move $a0,$t0
 
 after_ins:
-    move $a0,$t0
-    jal insert_fixup
-    move $v0,$a0
-    j insert_node_done
+    move $a0,$t0
+    jal insert_fixup
+    move $v0,$a0
+    j insert_node_don
 
 insert_node_done:
-    lw $s1, 0($sp)
-    lw $ra, 4($sp)
-    addi $sp, $sp, 8
-    jr $ra
+    lw $s1, 0($sp)
+    lw $ra, 4($sp)
+    addi $sp, $sp, 8
+    jr $ra
 
 # Function: insert_fixup
 # Arguments:
