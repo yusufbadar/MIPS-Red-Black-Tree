@@ -233,7 +233,7 @@ color_swap_after_rot:
     lw   $t9,12($t4)
     sw   $t8,12($t4)
     sw   $t9,12($t1)
-    j    done_fix
+    j    done_fi
 
 done_fix:
     move $t0,$a0
@@ -248,7 +248,7 @@ find_rt:
     move $v0,$t0
     lw   $ra,0($sp)
     addi $sp,$sp,4
-    jr   $ra
+    jr   $r
 
 move_up:
     move $t0,$t1
@@ -275,7 +275,6 @@ skip1:
 
 linkpl1:
     sw   $t1,4($t3)
-
 rl_fix:
 
 rootL:
