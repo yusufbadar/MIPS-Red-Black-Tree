@@ -170,149 +170,150 @@ insert_node_done:
 #	$v0 - pointer to the root of the tree
 
 insert_fixup:
-    addi $sp, $sp, -4
-    sw $ra, 0($sp) 
+    addi $sp,$sp,-4
+    sw   $ra,0($sp)
     move $t2,$a0
 
 fix_loop:
     lw $t1,16($t2)
     beqz $t1,done_fix
-    lw $t3,12($t1)
-    beqz $t3,done_fix  
-    lw $t4,16($t1) 
-    lw $t5,4($t4)  
-    beq $t5,$t1,parent_is_left 
-    lw $t6,4($t4)
-    j check_uncle_color 
+    lw   $t3,12($t1)
+    beqz $t3,done_fix
+    lw   $t4,16($t1)
+    lw   $t5,4($t4)
+    beq  $t5,$t1,parent_is_left
+    lw   $t6,4($t4)
+    j    check_uncle_color
+
 parent_is_left:
-    lw $t6,8($t4)
+    lw   $t6,8($t4)
 
 check_uncle_color:
     beqz $t6,do_rot
-    lw $t7,12($t6)
-    beqz $t7,do_rot 
-    li $t8,0
-    sw $t8,12($t1)
-    sw $t8,12($t6)
-    li $t8,1
-    sw $t8,12($t4)
+    lw   $t7,12($t6)
+    beqz $t7,do_rot
+    li   $t8,0
+    sw   $t8,12($t1)
+    sw   $t8,12($t6)
+    li   $t8,1
+    sw   $t8,12($t4)
     move $t2,$t4
-    j fix_loop
+    j    fix_loop
 
 do_rot:
-    lw $t5,4($t1)
-    beq $t2,$t5, case_3b_left_zag
-    lw $t5,4($t4)
-    beq $t1,$t5, case_3b_left_parent
+    lw   $t5,4($t1)
+    beq  $t2,$t5,case_3b_left_zag
+    lw   $t5,4($t4)
+    beq  $t1,$t5,case_3b_left_parent
     move $a0,$t4
-    jal rotate_left
-    j color_swap_after_rot
+    jal  rotate_left
+    j    color_swap_after_rot
 
 case_3b_left_zag:
-    lw $t5,4($t4)
-    beq $t1,$t5, case_3c_left_zig
-
+    lw   $t5,4($t4)
+    beq  $t1,$t5,case_3c_left_zig
     move $a0,$t1
-    jal rotate_right
+    jal  rotate_right
     move $t2,$a0
-    j case_3c_left_zig
+    j    case_3c_left_zig
 
 case_3b_left_parent:
     move $a0,$t1
-    jal rotate_left
+    jal  rotate_left
     move $t2,$a0
 
 case_3c_left_zig:
     move $a0,$t4
-    jal rotate_right
+    jal  rotate_right
 
 color_swap_after_rot:
-    lw $t1,16($t2)
-    lw $t4,16($t1)
-    lw $t8,12($t1)
-    lw $t9,12($t4)
-    sw $t8,12($t4)
-    sw $t9,12($t1)  
-    j done_fix
+    lw   $t1,16($t2)
+    lw   $t4,16($t1)
+    lw   $t8,12($t1)
+    lw   $t9,12($t4)
+    sw   $t8,12($t4)
+    sw   $t9,12($t1)
+    j    done_fix
 
 done_fix:
     move $t0,$a0
+
 find_rt_loop_exit:
     move $t0,$a0
+
 find_rt:
-    lw $t1,16($t0)
+    lw   $t1,16($t0)
     bnez $t1,move_up
-    sw $zero,12($t0)
+    sw   $zero,12($t0)
     move $v0,$t0
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
-    jr $ra
+    lw   $ra,0($sp)
+    addi $sp,$sp,4
+    jr   $ra
 
 move_up:
     move $t0,$t1
-    j find_rt
+    j    find_rt
 
 rotate_left:
-    addi $sp, $sp, -4
-    sw $ra, 0($sp)  
-    lw $t1,8($a0)
-    beqz $t1, done_rotate_left  
-    lw $t2,4($t1)
-    sw $t2,8($a0)
+    addi $sp,$sp,-4
+    sw   $ra,0($sp)
+    lw   $t1,8($a0)
+    beqz $t1,done_rotate_left
+    lw   $t2,4($t1)
+    sw   $t2,8($a0)
     beqz $t2,skip1
-    sw $a0,16($t2)
+    sw   $a0,16($t2)
 
 skip1:
-    lw $t3,16($a0)
-    sw $t3,16($t1)
+    lw   $t3,16($a0)
+    sw   $t3,16($t1)
     beqz $t3,rootL
-    lw $t4,4($t3)
-    beq $a0,$t4,linkpl1
-    sw $t1,8($t3)
-    j rl_fix
+    lw   $t4,4($t3)
+    beq  $a0,$t4,linkpl1
+    sw   $t1,8($t3)
+    j    rl_fix
 
 linkpl1:
-    sw $t1,4($t3)
+    sw   $t1,4($t3)
 
 rl_fix:
 
 rootL:
-    sw $a0,4($t1)
-    sw $t1,16($a0)
-
+    sw   $a0,4($t1)
+    sw   $t1,16($a0)
 done_rotate_left:
-    lw $ra,0($sp)
+    lw   $ra,0($sp)
     addi $sp,$sp,4
-    jr $ra
+    jr   $ra
 
 rotate_right:
-    addi $sp, $sp, -4
-    sw $ra, 0($sp)
-    lw $t1,4($a0)
-    beqz $t1, done_rotate_right
-    lw $t2,8($t1)
-    sw $t2,4($a0)
+    addi $sp,$sp,-4
+    sw   $ra,0($sp)
+    lw   $t1,4($a0)
+    beqz $t1,done_rotate_right
+    lw   $t2,8($t1)
+    sw   $t2,4($a0)
     beqz $t2,skip2
-    sw $a0,16($t2)
-skip2:
-    lw $t3,16($a0)
-    sw $t3,16($t1)
-    beqz $t3,rootR
-    lw $t4,4($t3)
-    beq $a0,$t4,linkpl2
-    sw $t1,4($t3)
-    j cont2
-linkpl2:
-    sw $t1,8($t3)
-cont2:
-rootR:
-    sw  $a0,8($t1)
-    sw  $t1,16($a0)
-    lw    $ra, 0($sp)
-    addi $sp, $sp, 4
-    jr  $ra
+    sw   $a0,16($t2)
 
-_rotate_right:
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
-    jr $ra
+skip2:
+    lw   $t3,16($a0)
+    sw   $t3,16($t1)
+    beqz $t3,rootR
+    lw   $t4,4($t3)
+    beq  $a0,$t4,linkpl2
+    sw   $t1,4($t3)
+    j    cont2
+
+linkpl2:
+    sw   $t1,8($t3)
+
+cont2:
+
+rootR:
+    sw   $a0,8($t1)
+    sw   $t1,16($a0)
+done_rotate_right:
+    lw   $ra,0($sp)
+    addi $sp,$sp,4
+    jr   $ra
