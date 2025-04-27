@@ -113,41 +113,41 @@ insert_node:
   li $v0,9
   li $a0,20
   syscall
-  move $t2,$v0
-  sw $a1,0($t2)
-  sw $zero,4($t2)
-  sw $zero,8($t2)
-  li $t0,1
-  sw $t0,12($t2)
-  sw $zero,16($t2)
-  move $t0,$s1
-  move $t1,$zero
+  move $t0,$v0
+  sw $a1,0($t0)
+  sw $zero,4($t0)
+  sw $zero,8($t0)
+  li $t1,1
+  sw $t1,12($t0)
+  sw $zero,16($t0)
+  move $t2,$s1
+  move $t3,$zero
 bst_loop:
-  beqz $t0,bst_done
-  move $t1,$t0
-  lw $t3,0($t0)
-  blt $a1,$t3,bst_left
-  lw $t0,8($t0)
+  beqz $t2,bst_done
+  move $t3,$t2
+  lw $t4,0($t2)
+  blt $a1,$t4,bst_left
+  lw $t2,8($t2)
   j bst_loop
 bst_left:
-  lw $t0,4($t0)
+  lw $t2,4($t2)
   j bst_loop
 bst_done:
-  sw $t1,16($t2)
-  beqz $t1,new_root
-  lw $t3,0($t1)
-  blt $a1,$t3,link_left
-  sw $t2,8($t1)
-  j after_ins
+  sw $t3,16($t0)
+  beqz $t3,new_root
+  lw $t4,0($t3)
+  blt $a1,$t4,link_left
+  sw $t0,8($t3)
+  j after_insert
 link_left:
-  sw $t2,4($t1)
+  sw $t0,4($t3)
+  j after_insert
 new_root:
-  move $s1,$t2
-after_ins:
-  move $a0,$t2
+  move $s1,$t0
+after_insert:
+  move $a0,$t0
   jal insert_fixup
-  move $s1,$v0
-  move $v0,$s1
+  move $v0,$v0
   lw $s1,0($sp)
   lw $ra,4($sp)
   addi $sp,$sp,8
@@ -162,64 +162,82 @@ after_ins:
 insert_fixup:
   addi $sp,$sp,-4
   sw $ra,0($sp)
-  move $t2,$a0
+  move $t0,$a0
 fixup_loop:
-  lw $t1,16($t2)
+  lw $t1,16($t0)
   beqz $t1,fixup_done
-  lw $t3,12($t1)
+  lw $t2,12($t1)
+  beqz $t2,fixup_done
+  lw $t3,16($t1)
   beqz $t3,fixup_done
-  lw $t4,16($t1)
-  lw $t5,4($t4)
-  beq $t5,$t1,left_case
-  lw $t6,4($t4)
+  lw $t4,4($t3)
+  beq $t4,$t1,case_left
+case_right:
+  lw $t5,4($t3)
+  move $t6,$t5
+  beqz $t6,uncle_black_right
   lw $t7,12($t6)
-  bne $t7,$zero,right_case2
+  beqz $t7,uncle_black_right
+uncle_red_right:
   sw $zero,12($t1)
   sw $zero,12($t6)
-  li $t7,1
-  sw $t7,12($t4)
-  move $t2,$t4
+  li $t8,1
+  sw $t8,12($t3)
+  move $t0,$t3
   j fixup_loop
-right_case2:
-  lw $t6,4($t1)
-  bne $t2,$t6,right_case3
-  move $t2,$t1
-  move $a0,$t2
+uncle_black_right:
+  lw $t7,4($t1)
+  bne $t0,$t7,skip_rotate_right
+  move $a0,$t1
   jal rotate_right
-right_case3:
-  sw $zero,12($t1)
-  li $t7,1
-  sw $t7,12($t4)
-  move $a0,$t4
+  move $t0,$a0
+skip_rotate_right:
+  move $a0,$t3
   jal rotate_left
+  lw $t1,16($t0)
+  sw $zero,12($t1)
+  li $t8,1
+  sw $t8,12($t3)
   j fixup_done
-left_case:
-  lw $t6,8($t4)
+
+case_left:
+  lw $t5,8($t3)
+  move $t6,$t5
+  beqz $t6,uncle_black_left
   lw $t7,12($t6)
-  bne $t7,$zero,left_case2
+  beqz $t7,uncle_black_left
+uncle_red_left:
   sw $zero,12($t1)
   sw $zero,12($t6)
-  li $t7,1
-  sw $t7,12($t4)
-  move $t2,$t4
+  li $t8,1
+  sw $t8,12($t3)
+  move $t0,$t3
   j fixup_loop
-left_case2:
-  lw $t6,8($t1)
-  bne $t2,$t6,left_case3
-  move $t2,$t1
-  move $a0,$t2
+uncle_black_left:
+  lw $t7,8($t1)
+  bne $t0,$t7,skip_rotate_left
+  move $a0,$t1
   jal rotate_left
-left_case3:
-  sw $zero,12($t1)
-  li $t7,1
-  sw $t7,12($t4)
-  move $a0,$t4
+  move $t0,$a0
+skip_rotate_left:
+  move $a0,$t3
   jal rotate_right
+  lw $t1,16($t0)
+  sw $zero,12($t1)
+  li $t8,1
+  sw $t8,12($t3)
   j fixup_done
+
 fixup_done:
-  move $t0,$s1
-  sw $zero,12($t0)
-  move $v0,$t0
+  move $t9,$t0
+find_root:
+  lw $t1,16($t9)
+  beqz $t1,found_root
+  move $t9,$t1
+  j find_root
+found_root:
+  sw $zero,12($t9)
+  move $v0,$t9
   lw $ra,0($sp)
   addi $sp,$sp,4
   jr $ra
@@ -228,22 +246,26 @@ rotate_left:
   addi $sp,$sp,-4
   sw $ra,0($sp)
   lw $t1,8($a0)
-  beqz $t1,rl_end
+  beqz $t1,done_rotate_left
   lw $t2,4($t1)
   sw $t2,8($a0)
-  beqz $t2,rl_skip1
+  beqz $t2,skip1_left
   sw $a0,16($t2)
-rl_skip1:
+skip1_left:
   lw $t3,16($a0)
   sw $t3,16($t1)
-  beqz $t3,rl_skip2
+  beqz $t3,skip2_left
   lw $t4,4($t3)
-  beq $a0,$t4,rl_skip2
+  beq $a0,$t4,link_left1
   sw $t1,8($t3)
-rl_skip2:
+  j after_link_left
+link_left1:
+  sw $t1,4($t3)
+after_link_left:
+skip2_left:
   sw $a0,4($t1)
   sw $t1,16($a0)
-rl_end:
+done_rotate_left:
   lw $ra,0($sp)
   addi $sp,$sp,4
   jr $ra
@@ -252,22 +274,26 @@ rotate_right:
   addi $sp,$sp,-4
   sw $ra,0($sp)
   lw $t1,4($a0)
-  beqz $t1,rr_end
+  beqz $t1,done_rotate_right
   lw $t2,8($t1)
   sw $t2,4($a0)
-  beqz $t2,rr_skip1
+  beqz $t2,skip1_right
   sw $a0,16($t2)
-rr_skip1:
+skip1_right:
   lw $t3,16($a0)
   sw $t3,16($t1)
-  beqz $t3,rr_skip2
+  beqz $t3,skip2_right
   lw $t4,4($t3)
-  beq $a0,$t4,rr_skip2
+  beq $a0,$t4,link_right1
   sw $t1,4($t3)
-rr_skip2:
+  j after_link_right
+link_right1:
+  sw $t1,8($t3)
+after_link_right:
+skip2_right:
   sw $a0,8($t1)
   sw $t1,16($a0)
-rr_end:
+done_rotate_right:
   lw $ra,0($sp)
   addi $sp,$sp,4
   jr $ra
