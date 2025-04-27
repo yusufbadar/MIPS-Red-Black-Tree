@@ -77,8 +77,22 @@ print_tree_end:
 
 search_node:
     # Function prologue
-	
-	
+    move $t0, $a0
+search_loop:
+    beqz $t0, search_not_found
+    lw $t1, 0($t0)
+    beq $t1, $a1, search_found
+	blt $a1, $t1, search_left
+    lw $t0, 8($t0)
+    j search_loop
+search_left:
+    lw $t0, 4($t0)
+    j search_loop
+search_found:
+    move $v0, $t0
+    j search_node_end
+search_not_found:
+    li $v0, -1
 search_node_end:	
 	#Function Epilogue
 	jr $ra
