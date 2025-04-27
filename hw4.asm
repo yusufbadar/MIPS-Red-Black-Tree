@@ -197,7 +197,7 @@ uncbnR:
 	move $t0,$v0
 no_r2:
     move $s0,$t3
-	move $a0,$t3
+	move $a0,$s0
 	jal rot_left
     move $t3, $s0
 	lw  $t1,16($t0)
@@ -232,7 +232,7 @@ uncbnL:
 	move $t0,$v0
 no_l2:
     move $s0, $t3
-	move $a0,$t3
+	move $a0,$s0
 	jal rot_right
     move $t3, $s0
 	lw  $t1,16($t0)
