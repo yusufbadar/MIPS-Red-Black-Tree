@@ -266,7 +266,10 @@ cont2:
 rootR:
     sw  $a0,8($t1)
     sw  $t1,16($a0)
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
     jr  $ra
+    
 done_rotate_left:
     lw $ra, 0($sp)
     addi $sp, $sp, 4
