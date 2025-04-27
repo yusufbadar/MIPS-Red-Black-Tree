@@ -256,7 +256,7 @@ skip1_left:
   sw $t3,16($t1)
   beqz $t3,skip2_left
   lw $t4,4($t3)
-  beq $a0,$t4,link_leftt
+  beq $a0,$t4,link_left
   sw $t1,8($t3)
   j after_link_left
 after_link_left:
