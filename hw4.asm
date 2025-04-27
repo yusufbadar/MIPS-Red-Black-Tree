@@ -114,6 +114,7 @@ insert_node:
     li $v0,9
     li $a0,20
     syscall
+    move $a0, $s1
     move $t0,$v0
     sw $a1,0($t0)
     li $t1,1
@@ -157,7 +158,11 @@ insert_node_done:
     jr $ra
 
 insert_fixup:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
     move $t2,$a0
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
 fix_loop:
     lw $t1,16($t2)
     beqz $t1,done_fix
@@ -210,6 +215,8 @@ find_rt:
     jr $ra
 
 rotate_left:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
     lw $t1,8($a0)
     beqz $t1, done_rotate_left
     beqz $t1, rootL
@@ -217,6 +224,8 @@ rotate_left:
     sw $t2,8($a0)
     beqz $t2,skip1
     sw $a0,16($t2)
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
 skip1:
     lw $t3,16($a0)
     sw $t3,16($t1)
@@ -235,12 +244,16 @@ rootL:
     jr $ra   
 
 rotate_right:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
     lw $t1,4($a0)
     beqz $t1, done_rotate_right
     lw $t2,8($t1)
     sw $t2,4($a0)
     beqz $t2,skip2
     sw $a0,16($t2)
+    lw $ra, 0($sp)
+a   ddi $sp, $sp, 4
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
