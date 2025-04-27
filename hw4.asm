@@ -136,14 +136,11 @@ bst_done:
   sw $t3,16($t0)
   beqz $t3,new_root
   lw $t4,0($t3)
-  blt $a1,$t4,link_left
+  blt $a1,$t4,link_left_insert
   sw $t0,8($t3)
   j after_insert
-link_left:
+link_left_insert:
   sw $t0,4($t3)
-  j after_insert
-new_root:
-  move $s1,$t0
 after_insert:
   move $a0,$t0
   jal insert_fixup
@@ -152,6 +149,9 @@ after_insert:
   lw $ra,4($sp)
   addi $sp,$sp,8
   jr $ra
+new_root:
+  move $s1,$t0
+  j after_insert
 
 # Function: insert_fixup
 # Arguments:
@@ -187,11 +187,11 @@ uncle_red_right:
   j fixup_loop
 uncle_black_right:
   lw $t7,4($t1)
-  beq $t7,$t0,rotate_right_step
+  bne $t7,$t0,skip_rotate_right
   move $a0,$t1
   jal rotate_right
   move $t0,$a0
-rotate_right_step:
+skip_rotate_right:
   move $a0,$t3
   jal rotate_left
   lw $t1,16($t0)
@@ -215,11 +215,11 @@ uncle_red_left:
   j fixup_loop
 uncle_black_left:
   lw $t7,8($t1)
-  beq $t7,$t0,rotate_left_step
+  bne $t7,$t0,skip_rotate_left
   move $a0,$t1
   jal rotate_left
   move $t0,$a0
-rotate_left_step:
+skip_rotate_left:
   move $a0,$t3
   jal rotate_right
   lw $t1,16($t0)
@@ -249,18 +249,20 @@ rotate_left:
   beqz $t1,done_rotate_left
   lw $t2,4($t1)
   sw $t2,8($a0)
-  beqz $t2,skip1_left
+  beqz $t2,skip1_left_rotate
   sw $a0,16($t2)
-skip1_left:
+skip1_left_rotate:
   lw $t3,16($a0)
   sw $t3,16($t1)
-  beqz $t3,skip2_left
+  beqz $t3,skip2_left_rotate
   lw $t4,4($t3)
-  beq $a0,$t4,link_left
+  beq $a0,$t4,link_left_rotate
   sw $t1,8($t3)
-  j after_link_left
-after_link_left:
-skip2_left:
+  j after_link_left_rotate
+link_left_rotate:
+  sw $t1,4($t3)
+after_link_left_rotate:
+skip2_left_rotate:
   sw $a0,4($t1)
   sw $t1,16($a0)
 done_rotate_left:
@@ -275,20 +277,20 @@ rotate_right:
   beqz $t1,done_rotate_right
   lw $t2,8($t1)
   sw $t2,4($a0)
-  beqz $t2,skip1_right
+  beqz $t2,skip1_right_rotate
   sw $a0,16($t2)
-skip1_right:
+skip1_right_rotate:
   lw $t3,16($a0)
   sw $t3,16($t1)
-  beqz $t3,skip2_right
+  beqz $t3,skip2_right_rotate
   lw $t4,4($t3)
-  beq $a0,$t4,link_right
+  beq $a0,$t4,link_right_rotate
   sw $t1,4($t3)
-  j after_link_right
-link_right:
+  j after_link_right_rotate
+link_right_rotate:
   sw $t1,8($t3)
-after_link_right:
-skip2_right:
+after_link_right_rotate:
+skip2_right_rotate:
   sw $a0,8($t1)
   sw $t1,16($a0)
 done_rotate_right:
