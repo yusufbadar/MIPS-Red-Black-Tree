@@ -91,8 +91,6 @@ search_left:
 search_found:
     move $v0, $t0
     j search_node_end
-search_not_found:
-    li $v0, -1
 search_node_end:	
 	#Function Epilogue
 	jr $ra
