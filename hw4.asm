@@ -196,7 +196,7 @@ no_r2:
 	sw $zero,12($t1)
 	li $t7,1
 	sw $t7,12($t3)
-	j end_fix
+	j fix_loop
 case_left:
 	lw $t5,8($t3)
 	beqz $t5,uncbnL
@@ -221,6 +221,7 @@ no_l2:
 	sw $zero,12($t1)
 	li $t7,1
 	sw $t7,12($t3)
+	j fix_loop
 end_fix:
 	move $t9,$t0
 find_root:
@@ -250,8 +251,11 @@ rl_skip1:
 	sw $t3,16($t1)
 	beqz $t3,rl_skip2
 	lw $t4,4($t3)
-	beq $a0,$t4,rl_skip2
+	beq $t4,$a0,rl_left_child
 	sw $t1,8($t3)
+	j rl_skip2
+rl_left_child:
+	sw $t1,4($t3)
 rl_skip2:
 	sw $a0,4($t1)
 	sw $t1,16($a0)
@@ -275,7 +279,10 @@ rr_skip1:
 	sw $t3,16($t1)
 	beqz $t3,rr_skip2
 	lw $t4,4($t3)
-	beq $a0,$t4,rr_skip2
+	beq $t4,$a0,rr_left_child
+	sw $t1,8($t3)
+	j rr_skip2
+rr_left_child:
 	sw $t1,4($t3)
 rr_skip2:
 	sw $a0,8($t1)
