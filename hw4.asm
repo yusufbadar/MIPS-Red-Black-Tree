@@ -239,6 +239,9 @@ rl_fix:
 rootL:
     sw $a0,4($t1)
     sw $t1,16($a0) 
+    lw $ra,0($sp)
+    addi $sp,$sp,4
+    jr $ra
 
 rotate_right:
     addi $sp, $sp, -4
