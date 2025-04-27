@@ -183,10 +183,8 @@ case_right:
 	sw $zero,12($t1)
 	sw $zero,12($t5)
 	li $t7,1
-    beqz $t3,skip_set_gp_color1
+	beqz $t3,skip_set_gp_color1
 	sw $t7,12($t3)
-	move $t0,$t3
-	j fix_loop
 skip_set_gp_color1:
 	move $t0,$t3
 	j fix_loop
@@ -202,7 +200,9 @@ no_r2:
 	jal rot_left
 	sw $zero,12($t1)
 	li $t7,1
+	beqz $t3,skip_set_gp_color3
 	sw $t7,12($t3)
+skip_set_gp_color3:
 	j fix_loop
 case_left:
 	lw $t5,8($t3)
@@ -230,7 +230,9 @@ no_l2:
 	jal rot_right
 	sw $zero,12($t1)
 	li $t7,1
+	beqz $t3,skip_set_gp_color4
 	sw $t7,12($t3)
+skip_set_gp_color4:
 	j fix_loop
 end_fix:
 	move $t9,$t0
