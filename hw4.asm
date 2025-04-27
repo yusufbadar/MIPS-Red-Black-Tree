@@ -193,7 +193,7 @@ no_r2:
 	jal rot_left
 	sw $zero,12($t1)
 	li $t7,1
-	sw $t7,16($t3)
+	sw $t7,12($t3)
 	j end_fix
 case_left:
 	lw $t5,8($t3)
@@ -242,6 +242,7 @@ rot_left:
 	sw $a0,16($t2)
 rl_skip1:
 	lw $t3,16($a0)
+	sw $t3,16($t1)
 	beqz $t3,rl_skip2
 	lw $t4,4($t3)
 	beq $a0,$t4,rl_skip2
@@ -264,6 +265,7 @@ rot_right:
 	sw $a0,16($t2)
 rr_skip1:
 	lw $t3,16($a0)
+	sw $t3,16($t1)
 	beqz $t3,rr_skip2
 	lw $t4,4($t3)
 	beq $a0,$t4,rr_skip2
