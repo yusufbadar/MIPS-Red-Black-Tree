@@ -253,7 +253,7 @@ rotate_right:
     beqz $t2,skip2
     sw $a0,16($t2)
     lw $ra, 0($sp)
-a   ddi $sp, $sp, 4
+    addi $sp, $sp, 4
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
