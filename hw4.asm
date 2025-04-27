@@ -120,7 +120,7 @@ insert_node:
     sw $t1,12($t0)
     sw $zero,4($t0)
     sw $zero,8($t0)
-    sw $zero,16($t0
+    sw $zero,16($t0)
     move $t1,$zero
     move $t2,$s1
 
@@ -247,7 +247,7 @@ find_rt:
     move $v0,$t0
     lw   $ra,0($sp)
     addi $sp,$sp,4
-    jr   $r
+    jr   $ra
 
 move_up:
     move $t0,$t1
