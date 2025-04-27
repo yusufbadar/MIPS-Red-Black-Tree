@@ -153,7 +153,6 @@ new_root:
 after_ins:
     move $a0,$t0
     jal insert_fixup
-    move $v0,$a0
     j insert_node_done
 
 insert_node_done:
@@ -237,10 +236,7 @@ color_swap_after_rot:
 
 done_fix:
     move $t0,$t2
-
-find_rt_loop_exit:
-    move $t0,$a0
-
+    
 find_rt:
     lw $t1, 16($t0)
     beqz $t1, root_found
