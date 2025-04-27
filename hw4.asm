@@ -22,20 +22,21 @@ color_black: .asciiz "B"
 
 print_tree:
     addi $sp, $sp, -8
-    sw $ra, 0($sp)
-    sw $s0, 4($sp)
+    sw $ra, 4($sp)
+    sw $s0, 0($sp)        
     move $s0, $a0
     beqz $s0, print_tree_end
-
-    #load
+    lw $a0, 4($s0)
+    jal print_tree
     lw $t0, 0($s0)
     lw $t1, 16($s0)
     lw $t2, 12($s0)
-    li $t3, 0
-    beqz $t1, parent_is_null
+    beqz $t1, no_parent
     lw $t3, 0($t1)
-
-parent_is_null:
+    j have_parent
+no_parent:
+    li $t3, 0
+have_parent:
     move $a0, $t0
     li $v0, 1
     syscall
@@ -45,27 +46,25 @@ parent_is_null:
     move $a0, $t3
     li $v0, 1
     syscall
-
     beqz $t2, print_black
     la $a0, color_red
     li $v0, 4
     syscall
     j after_color
-
-print_black: 
+print_black:
     la $a0, color_black
     li $v0, 4
     syscall
-
 after_color:
     la $a0, rparen_space
     li $v0, 4
     syscall
-
+    lw $a0, 8($s0)
+    jal print_tree
 print_tree_end:
     # Epilogue
-    lw $ra, 0($sp)
-    lw $s0, 4($sp)
+    lw $s0, 0($sp)
+    lw $ra, 4($sp)
     addi $sp, $sp, 8
     jr $ra # return
 
