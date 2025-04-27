@@ -193,7 +193,7 @@ no_r2:
 	jal rot_left
 	sw $zero,12($t1)
 	li $t7,1
-	sw $t7,12($t3)
+	sw $t7,16($t3)
 	j end_fix
 case_left:
 	lw $t5,8($t3)
