@@ -173,6 +173,7 @@ fix_loop:
     lw $t6,4($t4)
     beqz $t4, done_fix
     j chk_uncle
+    j done_fix
 case_L:
     lw $t6,8($t4)
 chk_uncle:
