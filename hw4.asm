@@ -275,11 +275,11 @@ rr_pok:
 	sw $t3,16($t1)
 	beqz $t3,rr_link
 	lw $t4,4($t3)
-	beq $a0,$t4,rr_rset
-	sw $t1,4($t3)
-	j rr_link
-rr_rset:
+	beq $a0,$t4,rr_lset
 	sw $t1,8($t3)
+	j rr_link
+rr_lset:
+    sw $t1, 4($t3)
 rr_link:
 	sw $a0,8($t1)
 	sw $t1,16($a0)
