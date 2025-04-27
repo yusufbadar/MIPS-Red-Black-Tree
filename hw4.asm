@@ -106,22 +106,22 @@ search_node_end:
 #	$v0 - pointer to root
 
 insert_node:
-	addi $sp,$sp,-8
-	sw $ra,4($sp)
-	sw $s1,0($sp)
-	move $s1,$a0
-	li $v0,9
-	li $a0,20
-	syscall
-	move $t0,$v0
-	sw $a1,0($t0)
-	sw $zero,4($t0)
-	sw $zero,8($t0)
-	li $t1,1
-	sw $t1,12($t0)
-	sw $zero,16($t0)
-	move $t2,$s1
-	move $t3,$zero
+    addi $sp,$sp,-8
+    sw $ra,4($sp)
+    sw $s1,0($sp)
+    move $s1,$a0
+    li $v0,9
+    li $a0,20
+    syscall
+    move $t0,$v0
+    sw $a1,0($t0)
+    sw $zero,4($t0)
+    sw $zero,8($t0)
+    li $t1,1
+    sw $t1,12($t0)
+    sw $zero,16($t0)
+    move $t2,$s1
+    move $t3,$zero
 bst_walk:
 	beqz $t2,bst_link
 	move $t3,$t2
@@ -158,10 +158,11 @@ go_fix:
 #    $a0 - pointer to the newly inserted node
 # Returns:
 #	$v0 - pointer to the root of the tree
+
 insert_fixup:
-	addi $sp,$sp,-4
+    addi $sp,$sp,-4
 	sw $ra,0($sp)
-	move $t0,$a0
+    move $t0,$a0
 fix_loop:
 	lw $t1,16($t0)
 	beqz $t1,end_fix
@@ -172,29 +173,30 @@ fix_loop:
 	lw $t4,4($t3)
 	beq $t4,$t1,case_left
 case_right:
-	lw $t5,4($t3)
-	beqz $t5,uncle_black_R
-	lw $t6,12($t5)
-	beqz $t6,uncle_black_R
-	sw $zero,12($t1)
-	sw $zero,12($t5)
-	li $t7,1
-	sw $t7,12($t3)
-	move $t0,$t3
-	j fix_loop
+    lw $t5,4($t3)
+    beqz $t5, uncle_black_R
+    lw $t6,12($t5)
+    beqz $t6, uncle_black_R
+    sw $zero,12($t1)
+    sw $zero,12($t5)
+    li $t7,1
+    sw $t7,12($t3)
+    move $t0,$t3
+    j fix_loop
 uncle_black_R:
-	lw $t6,4($t1)
-	bne $t0,$t6,right_ok
-	move $a0,$t1
-	jal rot_right
-	move $t0,$a0
+    lw $t6,4($t1)
+    bne $t0,$t6, right_ok
+    move $a0,$t1
+    jal rot_right
+    move $t0,$a0
 right_ok:
-	move $a0,$t3
-	jal rot_left
-	sw $zero,12($t1)
-	li $t7,1
-	sw $t7,12($t3)
-	j end_fix
+    move $a0,$t3
+    jal rot_left
+    sw $zero,12($t1)
+    li $t7,1
+    sw $t7,12($t3)
+    j end_fix
+
 case_left:
 	lw $t5,8($t3)
 	beqz $t5,uncle_black_L
@@ -244,14 +246,14 @@ rot_left:
 rl_pok:
 	lw $t3,16($a0)
 	sw $t3,16($t1)
-	beqz $t3,rl_setroot
+	beqz $t3,rl_link
 	lw $t4,4($t3)
-	beq $a0,$t4,rl_lchild
+	beq $a0,$t4,rl_lset
 	sw $t1,8($t3)
-	j rl_setroot
-rl_lchild:
+	j rl_link
+rl_lset:
 	sw $t1,4($t3)
-rl_setroot:
+rl_link:
 	sw $a0,4($t1)
 	sw $t1,16($a0)
 rl_ret:
@@ -271,14 +273,14 @@ rot_right:
 rr_pok:
 	lw $t3,16($a0)
 	sw $t3,16($t1)
-	beqz $t3,rr_setroot
+	beqz $t3,rr_link
 	lw $t4,4($t3)
-	beq $a0,$t4,rr_rchild
+	beq $a0,$t4,rr_rset
 	sw $t1,4($t3)
-	j rr_setroot
-rr_rchild:
+	j rr_link
+rr_rset:
 	sw $t1,8($t3)
-rr_setroot:
+rr_link:
 	sw $a0,8($t1)
 	sw $t1,16($a0)
 rr_ret:
