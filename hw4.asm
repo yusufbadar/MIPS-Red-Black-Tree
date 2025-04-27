@@ -250,6 +250,7 @@ rl_skip1:
 rl_skip2:
 	sw $a0,4($t1)
 	sw $t1,16($a0)
+    move $v0, $t1
 rl_ret:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
@@ -273,6 +274,7 @@ rr_skip1:
 rr_skip2:
 	sw $a0,8($t1)
 	sw $t1,16($a0)
+    move $v0, $t1
 rr_ret:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
