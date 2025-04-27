@@ -157,12 +157,12 @@ after_link:
 #    $a0 - pointer to the newly inserted node
 # Returns:
 #	$v0 - pointer to the root of the tree
-
 insert_fixup:
 	addi $sp,$sp,-4
 	sw $ra,0($sp)
 	move $t0,$a0
 fix_loop:
+	beqz $t0, end_fix
 	lw $t1,16($t0)
 	beqz $t1,end_fix
 	lw $t2,12($t1)
@@ -170,6 +170,7 @@ fix_loop:
 	lw $t3,16($t1)
 	beqz $t3,end_fix
 	lw $t4,4($t3)
+	beqz $t4,end_fix
 	beq $t4,$t1,case_left
 case_right:
 	lw $t5,4($t3)
@@ -184,6 +185,7 @@ case_right:
 	j fix_loop
 uncbnR:
 	lw $t6,4($t1)
+	beqz $t6,no_r2
 	bne $t0,$t6,no_r2
 	move $a0,$t1
 	jal rot_right
@@ -208,6 +210,7 @@ case_left:
 	j fix_loop
 uncbnL:
 	lw $t6,8($t1)
+	beqz $t6,no_l2
 	bne $t0,$t6,no_l2
 	move $a0,$t1
 	jal rot_left
@@ -221,6 +224,7 @@ no_l2:
 end_fix:
 	move $t9,$t0
 find_root:
+	beqz $t9,root_done
 	lw $t8,16($t9)
 	beqz $t8,root_done
 	move $t9,$t8
@@ -231,6 +235,7 @@ root_done:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
 	jr $ra
+
 rot_left:
 	addi $sp,$sp,-4
 	sw $ra,0($sp)
@@ -250,11 +255,12 @@ rl_skip1:
 rl_skip2:
 	sw $a0,4($t1)
 	sw $t1,16($a0)
-    move $v0, $t1
+	move $v0,$t1
 rl_ret:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
 	jr $ra
+
 rot_right:
 	addi $sp,$sp,-4
 	sw $ra,0($sp)
@@ -274,7 +280,7 @@ rr_skip1:
 rr_skip2:
 	sw $a0,8($t1)
 	sw $t1,16($a0)
-    move $v0, $t1
+	move $v0,$t1
 rr_ret:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
