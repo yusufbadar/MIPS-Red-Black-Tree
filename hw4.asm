@@ -151,8 +151,6 @@ after_ins:
     j insert_node_done
 
 insert_node_done:
-    jr $ra
-insert_node_done:
 	#Function Epilogue
     jr $ra
 
