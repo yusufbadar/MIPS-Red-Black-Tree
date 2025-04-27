@@ -297,7 +297,7 @@ rotate_right:
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
-    beqz$t3,rootR
+    beqz $t3,rootR
     lw $t4,4($t3)
     beq $a0,$t4,linkpl2
     sw $t1,4($t3)
