@@ -107,7 +107,147 @@ search_node_end:
 
 insert_node:
 	# Function prologue
+    li $v0,9
+    li $a0,20
+    syscall
+    move $t0,$v0
+    sw $a1,0($t0)
+    li $t1,1
+    sw $t1,12($t0)
+    sw $zero,4($t0)
+    sw $zero,8($t0)
+    sw $zero,16($t0)
+    move $t1,$zero
+    move $t2,$a0
+
+bst_loop:
+    beqz $t2,bst_done
+    move $t1,$t2
+    lw $t3,0($t2)
+    blt $a1,$t3,bst_left
+    lw $t2,8($t2)
+    j bst_loop
+
+bst_left:
+    lw $t2,4($t2)
+    j bst_loop
+
+bst_done:
+    sw $t1,16($t0)
+    beqz $t1,new_root
+    lw $t3,0($t1)
+    blt $a1,$t3,link_L
+    sw $t0,8($t1)
+    j after_ins
+link_L:
+    sw $t0,4($t1)
+new_root:
+    move $a0,$t0
+    j after_ins
+after_ins:
+    move $a0,$t0
+    jal insert_fixup
+    move $v0,$a0
+    j insert_node_done
 
 insert_node_done:
+    jr $ra
+insert_node_done:
 	#Function Epilogue
+    jr $ra
+
+insert_fixup:
+    move $t2,$a0
+fix_loop:
+    lw $t1,16($t2)
+    beqz $t1,done_fix
+    lw $t3,12($t1)
+    beqz $t3,done_fix
+    lw $t4,16($t1)
+    lw $t5,4($t4)
+    beq $t5,$t1,case_L
+    lw $t6,4($t4)
+    j chk_uncle
+case_L:
+    lw $t6,8($t4)
+chk_uncle:
+    beqz $t6,do_rot
+    lw $t7,12($t6)
+    beqz $t7,do_rot
+    li $t8,0
+    sw $t8,12($t1)
+    sw $t8,12($t6)
+    li $t8,1
+    sw $t8,12($t4)
+    move $t2,$t4
+    j fix_loop
+do_rot:
+    lw $t5,4($t4)
+    beq $t5,$t1,rot_L
+    move $a0,$t1
+    jal rotate_right
+    j rot_swap
+rot_L:
+    move $a0,$t1
+    jal rotate_left
+rot_swap:
+    move $a0,$t4
+    jal rotate_left
+    lw $t1,16($t2)
+    lw $t4,16($t1)
+    lw $t8,12($t1)
+    lw $t9,12($t4)
+    sw $t8,12($t4)
+    sw $t9,12($t1)
+done_fix:
+    move $t0,$a0
+find_rt:
+    lw $t1,16($t0)
+    bnez $t1,find_rt
+    sw $zero,12($t0)
+    move $v0,$t0
+    jr $ra
+
+rotate_left:
+    lw $t1,8($a0)
+    lw $t2,4($t1)
+    sw $t2,8($a0)
+    beqz $t2,skip1
+    sw $a0,16($t2)
+skip1:
+    lw $t3,16($a0)
+    sw $t3,16($t1)
+    beqz $t3,nopp1
+    lw $t4,4($t3)
+    beq $a0,$t4,linkpl1
+    sw  $t1,8($t3)
+    j   cont1
+linkpl1:
+    sw $t1,4($t3)
+cont1:
+    sw $a0,4($t1)
+    sw $t1,16($a0)
+nopp1:
+    jr $ra
+
+rotate_right:
+    lw $t1,4($a0)
+    lw $t2,8($t1)
+    sw $t2,4($a0)
+    beqz $t2,skip2
+    sw $a0,16($t2)
+skip2:
+    lw $t3,16($a0)
+    sw $t3,16($t1)
+    beqz $t3,nopp2
+    lw $t4,4($t3)
+    beq $a0,$t4,linkpl2
+    sw $t1,4($t3)
+    j cont2
+linkpl2:
+    sw $t1,8($t3)
+cont2:
+    sw $a0,8($t1)
+    sw $t1,16($a0)
+nopp2:
     jr $ra
