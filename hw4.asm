@@ -107,6 +107,7 @@ search_node_end:
 
 insert_node:
 	# Function prologue
+    move $s1, $a0
     li $v0,9
     li $a0,20
     syscall
@@ -118,7 +119,7 @@ insert_node:
     sw $zero,8($t0)
     sw $zero,16($t0)
     move $t1,$zero
-    move $t2,$a0
+    move $t2,$s1
 
 bst_loop:
     beqz $t2,bst_done
