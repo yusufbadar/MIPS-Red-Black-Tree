@@ -199,6 +199,11 @@ check_uncle_color:
     j fix_loop
 
 do_rot:
+    lw $t7,4($t4)
+    beq $t7,$t1,do_rot_left
+    j do_rot_right
+
+do_rot_left:
     lw $t5,4($t1)
     beq $t2,$t5,case_3b_left_zag
     lw $t5,4($t4)
@@ -223,9 +228,24 @@ case_3b_left_parent:
 case_3c_left_zig:
     move $a0,$t4
     jal rotate_right
+    j color_swap_after_rot
+
+do_rot_right:
+    lw $t5,4($t1)
+    beq $t2,$t5,case_3b_right_zag
+case_3c_right_zig:
+    move $a0,$t4
+    jal rotate_left
+    j color_swap_after_rot
+
+case_3b_right_zag:
+    move $a0,$t1
+    jal rotate_right
+    move $t2,$a0
+    j case_3c_right_zig
 
 color_swap_after_rot:
-    beqz $t2, done_fix
+    beqz $t2,done_fix
     lw $t1,16($t2)
     lw $t4,16($t1)
     lw $t8,12($t1)
@@ -236,16 +256,16 @@ color_swap_after_rot:
 
 done_fix:
     move $t0,$t2
-    
+
 find_rt:
-    lw $t1, 16($t0)
-    beqz $t1, root_found
-    move $t0, $t1
+    lw $t1,16($t0)
+    beqz $t1,root_found
+    move $t0,$t1
     j find_rt
 
 root_found:
-    sw $zero, 12($t0)
-    move $v0, $t0
+    sw $zero,12($t0)
+    move $v0,$t0
     lw $ra,0($sp)
     addi $sp,$sp,4
     jr $ra
@@ -263,7 +283,6 @@ rotate_left:
     sw $t2,8($a0)
     beqz $t2,skip1
     sw $a0,16($t2)
-
 skip1:
     lw $t3,16($a0)
     sw $t3,16($t1)
@@ -272,11 +291,9 @@ skip1:
     beq $a0,$t4,linkpl1
     sw $t1,8($t3)
     j rl_fix
-
 linkpl1:
     sw $t1,4($t3)
 rl_fix:
-
 rootL:
     sw $a0,4($t1)
     sw $t1,16($a0)
@@ -294,7 +311,6 @@ rotate_right:
     sw $t2,4($a0)
     beqz $t2,skip2
     sw $a0,16($t2)
-
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
@@ -303,12 +319,9 @@ skip2:
     beq $a0,$t4,linkpl2
     sw $t1,4($t3)
     j cont2
-
 linkpl2:
     sw $t1,8($t3)
-
 cont2:
-
 rootR:
     sw $a0,8($t1)
     sw $t1,16($a0)
