@@ -122,26 +122,29 @@ insert_node:
  sw $zero,16($t0)
  move $t2,$s1
  move $t3,$zero
-bst_loop:
- beqz $t2,bst_done
+bst_walk:
+ beqz $t2,bst_link
  move $t3,$t2
  lw $t4,0($t2)
  blt $a1,$t4,bst_left
  lw $t2,8($t2)
- j bst_loop
+ j bst_walk
 bst_left:
  lw $t2,4($t2)
- j bst_loop
-bst_done:
+ j bst_walk
+bst_link:
  sw $t3,16($t0)
  beqz $t3,new_root
  lw $t4,0($t3)
- blt $a1,$t4,link_left_ins
+ blt $a1,$t4,set_left
  sw $t0,8($t3)
- j after_ins
-link_left_ins:
+ j call_fix
+set_left:
  sw $t0,4($t3)
-after_ins:
+ j call_fix
+new_root:
+ move $s1,$t0
+call_fix:
  move $a0,$t0
  jal insert_fixup
  move $v0,$v0
@@ -149,9 +152,6 @@ after_ins:
  lw $ra,4($sp)
  addi $sp,$sp,8
  jr $ra
-new_root:
- move $s1,$t0
- j after_ins
 
 # Function: insert_fixup
 # Arguments:
@@ -163,77 +163,71 @@ insert_fixup:
  addi $sp,$sp,-4
  sw $ra,0($sp)
  move $t0,$a0
-fix_loop:
+fix_top:
  lw $t1,16($t0)
- beqz $t1,fix_done
+ beqz $t1,fix_end
  lw $t2,12($t1)
- beqz $t2,fix_done
+ beqz $t2,fix_end
  lw $t3,16($t1)
- beqz $t3,fix_done
+ beqz $t3,fix_end
  lw $t4,4($t3)
- beq $t4,$t1,case_left
-case_right:
- lw $t5,4($t3)
- move $t6,$t5
- beqz $t6,uncle_black_R
- lw $t7,12($t6)
- beqz $t7,uncle_black_R
-uncle_red_R:
+ beq $t4,$t1,fix_left
+ move $t5,$t4
+ beqz $t5,unc_black_R
+ lw $t6,12($t5)
+ beqz $t6,unc_black_R
  sw $zero,12($t1)
- sw $zero,12($t6)
- li $t8,1
- sw $t8,12($t3)
+ sw $zero,12($t5)
+ li $t7,1
+ sw $t7,12($t3)
  move $t0,$t3
- j fix_loop
-uncle_black_R:
- lw $t9,4($t1)
- bne $t9,$t0,skip_R1
+ j fix_top
+unc_black_R:
+ lw $t6,4($t1)
+ bne $t0,$t6,no_rzig
  move $a0,$t1
  jal rotate_right
  move $t0,$a0
-skip_R1:
+no_rzig:
  move $a0,$t3
  jal rotate_left
- lw $t1,16($t0)
  sw $zero,12($t1)
- li $t8,1
- sw $t8,12($t3)
- j fix_done
-case_left:
+ li $t7,1
+ sw $t7,12($t3)
+ j fix_end
+
+fix_left:
  lw $t5,8($t3)
  move $t6,$t5
- beqz $t6,uncle_black_L
+ beqz $t6,unc_black_L
  lw $t7,12($t6)
- beqz $t7,uncle_black_L
-uncle_red_L:
+ beqz $t7,unc_black_L
  sw $zero,12($t1)
  sw $zero,12($t6)
- li $t8,1
- sw $t8,12($t3)
+ li $t7,1
+ sw $t7,12($t3)
  move $t0,$t3
- j fix_loop
-uncle_black_L:
- lw $t9,8($t1)
- bne $t9,$t0,skip_L1
+ j fix_top
+unc_black_L:
+ lw $t6,8($t1)
+ bne $t0,$t6,no_lzig
  move $a0,$t1
  jal rotate_left
  move $t0,$a0
-skip_L1:
+no_lzig:
  move $a0,$t3
  jal rotate_right
- lw $t1,16($t0)
  sw $zero,12($t1)
- li $t8,1
- sw $t8,12($t3)
- j fix_done
-fix_done:
+ li $t7,1
+ sw $t7,12($t3)
+fix_end:
  move $t9,$t0
-find_root:
- lw $t1,16($t9)
- beqz $t1,root_done
- move $t9,$t1
- j find_root
-root_done:
+root_up:
+ lw $t8,16($t9)
+ beqz $t8,root_found
+ move $t9,$t8
+ j root_up
+root_found:
  sw $zero,12($t9)
  move $v0,$t9
  lw $ra,0($sp)
@@ -244,22 +238,26 @@ rotate_left:
  addi $sp,$sp,-4
  sw $ra,0($sp)
  lw $t1,8($a0)
- beqz $t1,rl_end
+ beqz $t1,rl_exit
  lw $t2,4($t1)
  sw $t2,8($a0)
- beqz $t2,rl_s1
+ beqz $t2,rl_skip1
  sw $a0,16($t2)
-rl_s1:
+rl_skip1:
  lw $t3,16($a0)
  sw $t3,16($t1)
- beqz $t3,rl_s2
+ beqz $t3,rl_setroot
  lw $t4,4($t3)
- beq $a0,$t4,rl_s2
+ beq $a0,$t4,rl_left
  sw $t1,8($t3)
-rl_s2:
+ j rl_childdone
+rl_left:
+ sw $t1,4($t3)
+rl_childdone:
+rl_setroot:
  sw $a0,4($t1)
  sw $t1,16($a0)
-rl_end:
+rl_exit:
  lw $ra,0($sp)
  addi $sp,$sp,4
  jr $ra
@@ -268,22 +266,26 @@ rotate_right:
  addi $sp,$sp,-4
  sw $ra,0($sp)
  lw $t1,4($a0)
- beqz $t1,rr_end
+ beqz $t1,rr_exit
  lw $t2,8($t1)
  sw $t2,4($a0)
- beqz $t2,rr_s1
+ beqz $t2,rr_skip1
  sw $a0,16($t2)
-rr_s1:
+rr_skip1:
  lw $t3,16($a0)
  sw $t3,16($t1)
- beqz $t3,rr_s2
+ beqz $t3,rr_setroot
  lw $t4,4($t3)
- beq $a0,$t4,rr_s2
+ beq $a0,$t4,rr_leftp
  sw $t1,4($t3)
-rr_s2:
+ j rr_childdone
+rr_leftp:
+ sw $t1,8($t3)
+rr_childdone:
+rr_setroot:
  sw $a0,8($t1)
  sw $t1,16($a0)
-rr_end:
+rr_exit:
  lw $ra,0($sp)
  addi $sp,$sp,4
  jr $ra
