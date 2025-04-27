@@ -161,8 +161,6 @@ insert_fixup:
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     move $t2,$a0
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
 fix_loop:
     lw $t1,16($t2)
     beqz $t1,done_fix
@@ -212,6 +210,8 @@ find_rt:
     bnez $t1,find_rt
     sw $zero,12($t0)
     move $v0,$t0
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
     jr $ra
 
 rotate_left:
@@ -224,8 +224,6 @@ rotate_left:
     sw $t2,8($a0)
     beqz $t2,skip1
     sw $a0,16($t2)
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
 skip1:
     lw $t3,16($a0)
     sw $t3,16($t1)
@@ -240,8 +238,7 @@ linkpl1:
 rl_fix:
 rootL:
     sw $a0,4($t1)
-    sw $t1,16($a0)
-    jr $ra   
+    sw $t1,16($a0) 
 
 rotate_right:
     addi $sp, $sp, -4
@@ -252,8 +249,6 @@ rotate_right:
     sw $t2,4($a0)
     beqz $t2,skip2
     sw $a0,16($t2)
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
@@ -266,10 +261,14 @@ linkpl2:
     sw $t1,8($t3)
 cont2:
 rootR:
-sw  $a0,8($t1)
+    sw  $a0,8($t1)
     sw  $t1,16($a0)
     jr  $ra
 done_rotate_left:
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
     jr $ra
 done_rotate_right:
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
     jr $ra
