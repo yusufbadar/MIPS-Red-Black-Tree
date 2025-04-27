@@ -216,7 +216,7 @@ case_3b_left_zag:
     lw $t5,4($t4)
     beq $t1,$t5,case_3c_left_zig
     move $a0,$t1
-    jal rotate_right
+    jal rotate_left
     move $t2,$a0
     j case_3c_left_zig
 
@@ -256,7 +256,6 @@ color_swap_after_rot:
 
 done_fix:
     move $t0,$t2
-
 find_rt:
     lw $t1,16($t0)
     beqz $t1,root_found
@@ -269,10 +268,6 @@ root_found:
     lw $ra,0($sp)
     addi $sp,$sp,4
     jr $ra
-
-move_up:
-    move $t0,$t1
-    j find_rt
 
 rotate_left:
     addi $sp,$sp,-4
@@ -316,11 +311,11 @@ skip2:
     sw $t3,16($t1)
     beqz $t3,rootR
     lw $t4,4($t3)
-    beq $a0,$t4,linkpl2
-    sw $t1,4($t3)
-    j cont2
-linkpl2:
+    beq $a0,$t4,linkpr_left
     sw $t1,8($t3)
+    j cont2
+linkpr_left:
+    sw $t1,4($t3)
 cont2:
 rootR:
     sw $a0,8($t1)
