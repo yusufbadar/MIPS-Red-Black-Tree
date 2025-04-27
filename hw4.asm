@@ -198,11 +198,11 @@ uncbnR:
 no_r2:
 	move $a0,$t3
 	jal rot_left
-	lw $t1,16($t0)      # fix: new parent
-	sw $zero,12($t1)    # set parent black
+	lw $t1,16($t0)
+	sw $zero,12($t1)
 	li $t7,1
 	beqz $t3,skip_set_gp_color3
-	sw $t7,12($t3)      # set grandparent red
+	sw $t7,12($t3)
 skip_set_gp_color3:
 	j fix_loop
 case_left:
@@ -229,11 +229,11 @@ uncbnL:
 no_l2:
 	move $a0,$t3
 	jal rot_right
-	lw $t1,16($t0)      # fix: new parent
-	sw $zero,12($t1)    # set parent black
+	lw $t1,16($t0)
+	sw $zero,12($t1)
 	li $t7,1
 	beqz $t3,skip_set_gp_color4
-	sw $t7,12($t3)      # set grandparent red
+	sw $t7,12($t3)
 skip_set_gp_color4:
 	j fix_loop
 end_fix:
@@ -305,4 +305,4 @@ rr_skip2:
 rr_ret:
 	lw $ra,0($sp)
 	addi $sp,$sp,4
-    jr $ra
+	jr $ra
