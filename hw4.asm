@@ -256,10 +256,10 @@ skip1_left:
   sw $t3,16($t1)
   beqz $t3,skip2_left
   lw $t4,4($t3)
-  beq $a0,$t4,link_left
+  beq $a0,$t4,link_leftt
   sw $t1,8($t3)
   j after_link_left
-link_left:
+link_leftt:
   sw $t1,4($t3)
 after_link_left:
 skip2_left:
