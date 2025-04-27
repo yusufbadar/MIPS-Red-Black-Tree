@@ -236,16 +236,20 @@ color_swap_after_rot:
     j done_fix
 
 done_fix:
-    move $t0,$a0
+    move $t0,$t2
 
 find_rt_loop_exit:
     move $t0,$a0
 
 find_rt:
-    lw $t1,16($t0)
-    bnez $t1,move_up
-    sw $zero,12($t0)
-    move $v0,$t0
+    lw $t1, 16($t0)
+    beqz $t1, root_found
+    move $t0, $t1
+    j find_rt
+
+root_found:
+    sw $zero, 12($t0)
+    move $v0, $t0
     lw $ra,0($sp)
     addi $sp,$sp,4
     jr $ra
