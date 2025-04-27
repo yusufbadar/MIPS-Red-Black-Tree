@@ -149,6 +149,7 @@ after_ins:
     move $a0,$t0
     jal insert_fixup
     move $v0,$a0
+    j insert_node_done
 
 insert_node_done:
 	#Function Epilogue
@@ -269,7 +270,7 @@ rootR:
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
     jr  $ra
-    
+
 done_rotate_left:
     lw $ra, 0($sp)
     addi $sp, $sp, 4
