@@ -216,18 +216,19 @@ rotate_left:
 skip1:
     lw $t3,16($a0)
     sw $t3,16($t1)
-    beqz $t3,nopp1
+    beqz $t3,rootL
     lw $t4,4($t3)
+    
     beq $a0,$t4,linkpl1
     sw  $t1,8($t3)
-    j   cont1
+    j rl_fix
 linkpl1:
     sw $t1,4($t3)
-cont1:
+rl_fix:
+rootL:
     sw $a0,4($t1)
     sw $t1,16($a0)
-nopp1:
-    jr $ra
+    jr $ra   
 
 rotate_right:
     lw $t1,4($a0)
@@ -238,7 +239,7 @@ rotate_right:
 skip2:
     lw $t3,16($a0)
     sw $t3,16($t1)
-    beqz $t3,nopp2
+    beqz $t3,rootR
     lw $t4,4($t3)
     beq $a0,$t4,linkpl2
     sw $t1,4($t3)
@@ -246,7 +247,7 @@ skip2:
 linkpl2:
     sw $t1,8($t3)
 cont2:
-    sw $a0,8($t1)
-    sw $t1,16($a0)
-nopp2:
-    jr $ra
+rootR:
+sw  $a0,8($t1)
+    sw  $t1,16($a0)
+    jr  $ra
