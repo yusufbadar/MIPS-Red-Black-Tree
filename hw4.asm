@@ -30,7 +30,6 @@ print_tree:
     jal print_tree
     lw $t0, 0($s0)
     lw $t1, 16($s0)
-    lw $t2, 12($s0)
     beqz $t1, no_parent
     lw $t3, 0($t1)
     j have_parent
