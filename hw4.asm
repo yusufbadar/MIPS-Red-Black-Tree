@@ -36,6 +36,7 @@ print_tree:
 no_parent:
     li $t3, 0
 have_parent:
+    lw   $t2, 12($s0)
     move $a0, $t0
     li $v0, 1
     syscall
