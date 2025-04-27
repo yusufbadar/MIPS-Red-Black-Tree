@@ -232,7 +232,7 @@ color_swap_after_rot:
     lw   $t9,12($t4)
     sw   $t8,12($t4)
     sw   $t9,12($t1)
-    j    done_fi
+    j    done_fix
 
 done_fix:
     move $t0,$a0
