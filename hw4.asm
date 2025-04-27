@@ -183,7 +183,11 @@ case_right:
 	sw $zero,12($t1)
 	sw $zero,12($t5)
 	li $t7,1
+    beqz $t3,skip_set_gp_color1
 	sw $t7,12($t3)
+	move $t0,$t3
+	j fix_loop
+skip_set_gp_color1:
 	move $t0,$t3
 	j fix_loop
 uncbnR:
@@ -209,7 +213,9 @@ case_left:
 	sw $zero,12($t1)
 	sw $zero,12($t5)
 	li $t7,1
-	sw $t7,12($t3)  
+	beqz $t3,skip_set_gp_color2
+	sw $t7,12($t3)
+skip_set_gp_color2:
 	move $t0,$t3
 	j fix_loop
 uncbnL:
