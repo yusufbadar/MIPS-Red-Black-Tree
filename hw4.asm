@@ -199,6 +199,7 @@ no_r2:
     move $s0,$t3
 	move $a0,$s0
 	jal rot_left
+	move $t0,$v0
     move $t3, $s0
 	lw  $t1,16($t0)
 	beqz $t1,skip_set_par1
@@ -234,6 +235,7 @@ no_l2:
     move $s0, $t3
 	move $a0,$s0
 	jal rot_right
+	move $t0,$v0
     move $t3, $s0
 	lw  $t1,16($t0)
 	beqz $t1,skip_set_par2
