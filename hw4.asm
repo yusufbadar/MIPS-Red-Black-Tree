@@ -106,52 +106,52 @@ search_node_end:
 #	$v0 - pointer to root
 
 insert_node:
- addi $sp,$sp,-8
- sw $ra,4($sp)
- sw $s1,0($sp)
- move $s1,$a0
- li $v0,9
- li $a0,20
- syscall
- move $t0,$v0
- sw $a1,0($t0)
- sw $zero,4($t0)
- sw $zero,8($t0)
- li $t1,1
- sw $t1,12($t0)
- sw $zero,16($t0)
- move $t2,$s1
- move $t3,$zero
+    addi $sp,$sp,-8
+    sw $ra,4($sp)
+    sw $s1,0($sp)
+    move $s1,$a0
+    li $v0,9
+    li $a0,20
+    syscall
+    move $t0,$v0
+    sw $a1,0($t0)
+    sw $zero,4($t0)
+    sw $zero,8($t0)
+    li $t1,1
+    sw $t1,12($t0)
+    sw $zero,16($t0)
+    move $t2,$s1
+    move $t3,$zero
 bst_walk:
- beqz $t2,bst_link
- move $t3,$t2
- lw $t4,0($t2)
- blt $a1,$t4,bst_left
- lw $t2,8($t2)
- j bst_walk
+	beqz $t2,bst_link
+	move $t3,$t2
+	lw $t4,0($t2)
+	blt $a1,$t4,bst_left
+	lw $t2,8($t2)
+	j bst_walk
 bst_left:
- lw $t2,4($t2)
- j bst_walk
+	lw $t2,4($t2)
+	j bst_walk
 bst_link:
- sw $t3,16($t0)
- beqz $t3,new_root
- lw $t4,0($t3)
- blt $a1,$t4,set_left
- sw $t0,8($t3)
- j call_fix
-set_left:
- sw $t0,4($t3)
- j call_fix
+	sw $t3,16($t0)
+	beqz $t3,new_root
+	lw $t4,0($t3)
+	blt $a1,$t4,link_left
+	sw $t0,8($t3)
+	j go_fix
+link_left:
+	sw $t0,4($t3)
+	j go_fix
 new_root:
- move $s1,$t0
-call_fix:
- move $a0,$t0
- jal insert_fixup
- move $v0,$v0
- lw $s1,0($sp)
- lw $ra,4($sp)
- addi $sp,$sp,8
- jr $ra
+	move $s1,$t0
+go_fix:
+	move $a0,$t0
+	jal insert_fixup
+	move $v0,$v0
+	lw $s1,0($sp)
+	lw $ra,4($sp)
+	addi $sp,$sp,8
+	jr $ra
 
 # Function: insert_fixup
 # Arguments:
@@ -160,132 +160,130 @@ call_fix:
 #	$v0 - pointer to the root of the tree
 
 insert_fixup:
- addi $sp,$sp,-4
- sw $ra,0($sp)
- move $t0,$a0
-fix_top:
- lw $t1,16($t0)
- beqz $t1,fix_end
- lw $t2,12($t1)
- beqz $t2,fix_end
- lw $t3,16($t1)
- beqz $t3,fix_end
- lw $t4,4($t3)
- beq $t4,$t1,fix_left
- move $t5,$t4
- beqz $t5,unc_black_R
- lw $t6,12($t5)
- beqz $t6,unc_black_R
- sw $zero,12($t1)
- sw $zero,12($t5)
- li $t7,1
- sw $t7,12($t3)
- move $t0,$t3
- j fix_top
-unc_black_R:
- lw $t6,4($t1)
- bne $t0,$t6,no_rzig
- move $a0,$t1
- jal rotate_right
- move $t0,$a0
-no_rzig:
- move $a0,$t3
- jal rotate_left
- sw $zero,12($t1)
- li $t7,1
- sw $t7,12($t3)
- j fix_end
+    addi $sp,$sp,-4
+	sw $ra,0($sp)
+    move $t0,$a0
+fix_loop:
+	lw $t1,16($t0)
+	beqz $t1,end_fix
+	lw $t2,12($t1)
+	beqz $t2,end_fix
+	lw $t3,16($t1)
+	beqz $t3,end_fix
+	lw $t4,4($t3)
+	beq $t4,$t1,case_left
+case_right:
+	lw $t5,4($t3)
+	beqz $t5,uncle_black_R
+	lw $t6,12($t5)
+	beqz $t6,uncle_black_R
+	sw $zero,12($t1)
+	sw $zero,12($t5)
+	li $t7,1
+	sw $t7,12($t3)
+	move $t0,$t3
+	j fix_loop
+uncle_black_R:
+	lw $t6,4($t1)
+	bne $t0,$t6,right_ok
+	move $a0,$t1
+	jal rot_right
+	move $t0,$a0
+right_ok:
+	move $a0,$t3
+	jal rot_left
+	sw $zero,12($t1)
+	li $t7,1
+	sw $t7,12($t3)
+	j end_fix
 
-fix_left:
- lw $t5,8($t3)
- move $t6,$t5
- beqz $t6,unc_black_L
- lw $t7,12($t6)
- beqz $t7,unc_black_L
- sw $zero,12($t1)
- sw $zero,12($t6)
- li $t7,1
- sw $t7,12($t3)
- move $t0,$t3
- j fix_top
-unc_black_L:
- lw $t6,8($t1)
- bne $t0,$t6,no_lzig
- move $a0,$t1
- jal rotate_left
- move $t0,$a0
-no_lzig:
- move $a0,$t3
- jal rotate_right
- sw $zero,12($t1)
- li $t7,1
- sw $t7,12($t3)
-fix_end:
- move $t9,$t0
-root_up:
- lw $t8,16($t9)
- beqz $t8,root_found
- move $t9,$t8
- j root_up
-root_found:
- sw $zero,12($t9)
- move $v0,$t9
- lw $ra,0($sp)
- addi $sp,$sp,4
- jr $ra
+case_left:
+	lw $t5,8($t3)
+	beqz $t5,uncle_black_L
+	lw $t6,12($t5)
+	beqz $t6,uncle_black_L
+	sw $zero,12($t1)
+	sw $zero,12($t5)
+	li $t7,1
+	sw $t7,12($t3)
+	move $t0,$t3
+	j fix_loop
+uncle_black_L:
+	lw $t6,8($t1)
+	bne $t0,$t6,left_ok
+	move $a0,$t1
+	jal rot_left
+	move $t0,$a0
+left_ok:
+	move $a0,$t3
+	jal rot_right
+	sw $zero,12($t1)
+	li $t7,1
+	sw $t7,12($t3)
+end_fix:
+	move $t9,$t0
+up_root:
+	lw $t8,16($t9)
+	beqz $t8,root_done
+	move $t9,$t8
+	j up_root
+root_done:
+	sw $zero,12($t9)
+	move $v0,$t9
+	lw $ra,0($sp)
+	addi $sp,$sp,4
+	jr $ra
 
-rotate_left:
- addi $sp,$sp,-4
- sw $ra,0($sp)
- lw $t1,8($a0)
- beqz $t1,rl_exit
- lw $t2,4($t1)
- sw $t2,8($a0)
- beqz $t2,rl_skip1
- sw $a0,16($t2)
-rl_skip1:
- lw $t3,16($a0)
- sw $t3,16($t1)
- beqz $t3,rl_setroot
- lw $t4,4($t3)
- beq $a0,$t4,rl_left
- sw $t1,8($t3)
- j rl_childdone
-rl_left:
- sw $t1,4($t3)
-rl_childdone:
-rl_setroot:
- sw $a0,4($t1)
- sw $t1,16($a0)
-rl_exit:
- lw $ra,0($sp)
- addi $sp,$sp,4
- jr $ra
+rot_left:
+	addi $sp,$sp,-4
+	sw $ra,0($sp)
+	lw $t1,8($a0)
+	beqz $t1,rl_ret
+	lw $t2,4($t1)
+	sw $t2,8($a0)
+	beqz $t2,rl_pok
+	sw $a0,16($t2)
+rl_pok:
+	lw $t3,16($a0)
+	sw $t3,16($t1)
+	beqz $t3,rl_link
+	lw $t4,4($t3)
+	beq $a0,$t4,rl_lset
+	sw $t1,8($t3)
+	j rl_link
+rl_lset:
+	sw $t1,4($t3)
+rl_link:
+	sw $a0,4($t1)
+	sw $t1,16($a0)
+rl_ret:
+	lw $ra,0($sp)
+	addi $sp,$sp,4
+	jr $ra
 
-rotate_right:
- addi $sp,$sp,-4
- sw $ra,0($sp)
- lw $t1,4($a0)
- beqz $t1,rr_exit
- lw $t2,8($t1)
- sw $t2,4($a0)
- beqz $t2,rr_skip1
- sw $a0,16($t2)
-rr_skip1:
- lw $t3,16($a0)
- sw $t3,16($t1)
- beqz $t3,rr_setroot
- lw $t4,4($t3)
- beq $a0,$t4,rr_leftp
- sw $t1,4($t3)
- j rr_childdone
-rr_leftp:
- sw $t1,8($t3)
-rr_childdone:
-rr_setroot:
- sw $a0,8($t1)
- sw $t1,16($a0)
-rr_exit:
- lw $ra,0($sp)
- addi $sp,$sp,4
- jr $ra
+rot_right:
+	addi $sp,$sp,-4
+	sw $ra,0($sp)
+	lw $t1,4($a0)
+	beqz $t1,rr_ret
+	lw $t2,8($t1)
+	sw $t2,4($a0)
+	beqz $t2,rr_pok
+	sw $a0,16($t2)
+rr_pok:
+	lw $t3,16($a0)
+	sw $t3,16($t1)
+	beqz $t3,rr_link
+	lw $t4,4($t3)
+	beq $a0,$t4,rr_rset
+	sw $t1,4($t3)
+	j rr_link
+rr_rset:
+	sw $t1,8($t3)
+rr_link:
+	sw $a0,8($t1)
+	sw $t1,16($a0)
+rr_ret:
+	lw $ra,0($sp)
+	addi $sp,$sp,4
+	jr $ra
