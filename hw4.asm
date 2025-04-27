@@ -154,7 +154,7 @@ after_ins:
     move $a0,$t0
     jal insert_fixup
     move $v0,$a0
-    j insert_node_don
+    j insert_node_done
 
 insert_node_done:
     lw $s1, 0($sp)
