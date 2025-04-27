@@ -235,6 +235,7 @@ rootL:
 
 rotate_right:
     lw $t1,4($a0)
+    beqz $t1, done_rotate_right
     lw $t2,8($t1)
     sw $t2,4($a0)
     beqz $t2,skip2
@@ -255,4 +256,6 @@ sw  $a0,8($t1)
     sw  $t1,16($a0)
     jr  $ra
 done_rotate_left:
+    jr $ra
+done_rotate_right:
     jr $ra
