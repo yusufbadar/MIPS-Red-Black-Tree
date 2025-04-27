@@ -226,8 +226,8 @@ case_3c_left_zig:
     jal rotate_right
 
 color_swap_after_rot:
-    beqz $t2, done_fix
     lw $t1,16($t2)
+    beqz $t2, done_fix
     lw $t4,16($t1)
     lw $t8,12($t1)
     lw $t9,12($t4)
