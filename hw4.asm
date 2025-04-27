@@ -174,7 +174,6 @@ insert_fixup:
     move $t2,$a0
 
 fix_loop:
-    beqz $t2, done_fix
     lw $t1,16($t2)
     beqz $t1,done_fix
     lw $t3,12($t1)
