@@ -198,11 +198,13 @@ uncbnR:
 no_r2:
 	move $a0,$t3
 	jal rot_left
-	lw $t1,16($t0)
-	sw $zero,12($t1)
-	li $t7,1
+	lw  $t1,16($t0)
+	beqz $t1,skip_set_par1
+	sw  $zero,12($t1)
+skip_set_par1:
+	li  $t7,1
 	beqz $t3,skip_set_gp_color3
-	sw $t7,12($t3)
+	sw  $t7,12($t3)
 skip_set_gp_color3:
 	j fix_loop
 case_left:
@@ -229,11 +231,13 @@ uncbnL:
 no_l2:
 	move $a0,$t3
 	jal rot_right
-	lw $t1,16($t0)
-	sw $zero,12($t1)
-	li $t7,1
+	lw  $t1,16($t0)
+	beqz $t1,skip_set_par2
+	sw  $zero,12($t1)
+skip_set_par2:
+	li  $t7,1
 	beqz $t3,skip_set_gp_color4
-	sw $t7,12($t3)
+	sw  $t7,12($t3)
 skip_set_gp_color4:
 	j fix_loop
 end_fix:
